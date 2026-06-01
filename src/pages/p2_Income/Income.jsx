@@ -1,0 +1,54 @@
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
+
+const link = [
+  {
+    buttonName: "Total Penghasilan",
+    destination: "/income/total",
+  },
+  {
+    buttonName: "Shopee",
+    destination: "/income/shopee",
+  },
+  {
+    buttonName: "TikTok",
+    destination: "/income/tiktok",
+  },
+];
+
+export default function Income() {
+  return (
+    <div className=" flex flex-col justify-center items-center gap-y-4">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/">Home</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Penghasilan</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <ul className="text-center flex flex-col gap-y-2 justify-center items-center">
+        {link.map((url) => (
+          <li key={url.destination}>
+            <Button asChild>
+              <Link to={url.destination}>{url.buttonName}</Link>
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

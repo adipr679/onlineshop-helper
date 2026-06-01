@@ -1,0 +1,123 @@
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useDebt } from "@/context/DebtContext";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useIncomeAllocation } from "../../context/IncomeAllocationContext";
+import { separateNumber } from "../../utils/generalFunction";
+
+export default function StepOne() {
+  const { totalWithdraw, setTotalWithdraw, whichSupplier, setWhichSupplier } =
+    useIncomeAllocation();
+  const { supplier, getSupplierList } = useDebt();
+
+  const [errorSupplier, setErrorSupplier] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getSupplierList();
+  }, []);
+
+  return (
+    <div className="flex justify-center items-center flex-col gap-y-4">
+      {supplier.length > 0 ? (
+        <div className="border px-4 py-3 rounded-md">
+          <FieldSet>
+            <FieldLegend>Supplier & Total Penarikan</FieldLegend>
+            <FieldDescription>
+              Mohon masukan supplier dan total penarikan dana
+            </FieldDescription>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (whichSupplier) {
+                  navigate("/debt/incomeAllocation/calculateHPP");
+                } else {
+                  setErrorSupplier(true);
+                }
+              }}
+            >
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="supplier">Supplier</FieldLabel>
+                  <Select
+                    id="supplier"
+                    value={whichSupplier}
+                    onValueChange={(e) => {
+                      setErrorSupplier(false);
+                      setWhichSupplier(e);
+                    }}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Supplier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {supplier.map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {errorSupplier && (
+                    <FieldError>Mohon Pilih Supplier</FieldError>
+                  )}
+                </Field>
+                <Field>
+                  <FieldLabel>Total Penarikan Dana</FieldLabel>
+                  <Input
+                    type="text"
+                    value={totalWithdraw}
+                    placeholder="0"
+                    autoComplete="off"
+                    onChange={(e) => {
+                      const value = separateNumber(e);
+                      setTotalWithdraw(value);
+                    }}
+                    required
+                  />
+                </Field>
+                <Field>
+                  <Button type="button" asChild>
+                    <Link to="/">Kembali</Link>
+                  </Button>
+
+                  {/* Selanjutnya */}
+                  <Button type="submit" className="bg-green-700">
+                    Selanjutnya
+                  </Button>
+                </Field>
+              </FieldGroup>
+            </form>
+          </FieldSet>
+        </div>
+      ) : (
+        <div className="text-center">
+          <p>Mohon Tambahkan Supplier Terlebih Dahulu</p>
+          <Button type="button" asChild>
+            <Link to="/debt/supplier">Tambah Supplier</Link>
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
