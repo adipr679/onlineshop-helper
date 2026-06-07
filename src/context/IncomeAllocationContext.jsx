@@ -26,6 +26,7 @@ export function IncomeAllocationProvider({ children }) {
 
   // summary Context
   const [dailyWage, setDailyWage] = useState(0);
+  const [denaWage, setDenaWage] = useState(0);
   const [totalBill, setTotalBill] = useState(0);
   const [bills, setBills] = useState([]);
   const [modifiedSetorBarang, setModifiedSetorBarang] = useState([]);
@@ -103,6 +104,8 @@ export function IncomeAllocationProvider({ children }) {
         setShopeeHasSaveToFirebase,
         tiktokHasSaveToFirebase,
         setTiktokHasSaveToFirebase,
+        denaWage,
+        setDenaWage,
       }}
     >
       {children}

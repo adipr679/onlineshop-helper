@@ -65,6 +65,7 @@ import {
   halfDayWage,
   metode,
   splitBillEmaIki,
+  denaWageFullDay,
 } from "../../lib/variables";
 import {
   createDocument,
@@ -108,6 +109,8 @@ const StepThree = () => {
     setShopeeHasSaveToFirebase,
     tiktokHasSaveToFirebase,
     setTiktokHasSaveToFirebase,
+    denaWage,
+    setDenaWage,
   } = useIncomeAllocation();
   const navigate = useNavigate();
   const {
@@ -142,6 +145,7 @@ const StepThree = () => {
   // Other
   const [alreadyCalculated, setAlreadyCalculated] = useState(false);
   const [work, setWork] = useState(day === 0 ? false : true);
+  const [denaWork, setDenaWork] = useState(day === 0 ? false : true);
   const [workingTime, setWorkingTime] = useState("Full Day");
   const [simpleMode, setSimpleMode] = useState(true);
   const choosedSupplier = useMemo(() => {
@@ -182,6 +186,16 @@ const StepThree = () => {
   const calculateNow = (e) => {
     e.preventDefault();
 
+    // hitung gaji dena
+    let denaWageTemp = 0;
+    if (denaWork) {
+      denaWageTemp = denaWageFullDay;
+      setDenaWage(denaWageFullDay);
+    } else {
+      denaWageTemp = 0;
+      setDenaWage(0);
+    }
+
     // hitung gaji harian
     let dailyWageTemp = 0;
     if (work) {
@@ -217,10 +231,20 @@ const StepThree = () => {
         (splitBillEmaIki.uko + getGrossProfit) -
         totalOtherBills;
     }
+
+    let untukAdeSiskaWithDena = 0;
     if (work) {
+      untukAdeSiskaWithDena = untukAdeSiska - dailyWageTemp;
       setUangAdeSiska(untukAdeSiska - dailyWageTemp);
     } else {
+      untukAdeSiskaWithDena = untukAdeSiska;
       setUangAdeSiska(untukAdeSiska);
+    }
+
+    if (denaWork) {
+      console.log(denaWageTemp);
+      const newUntukAdeSiska = untukAdeSiskaWithDena - denaWageTemp;
+      setUangAdeSiska(newUntukAdeSiska);
     }
 
     // Hitung Uang Untuk Ma Iki Dari Komisi Kotor
@@ -700,8 +724,22 @@ const StepThree = () => {
                 <span>Kerja Hari Ini</span>
                 <Switch
                   checked={work}
-                  onCheckedChange={() => {
-                    setWork(!work);
+                  onCheckedChange={(v) => {
+                    setWork(v);
+                    setAlreadyCalculated(false);
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Tombol On Off Dena Kerja */}
+            {!isTikTok && (
+              <div className="flex items-center justify-between input-components">
+                <span>Dena Kerja Hari Ini</span>
+                <Switch
+                  checked={denaWork}
+                  onCheckedChange={(v) => {
+                    setDenaWork(v);
                     setAlreadyCalculated(false);
                   }}
                 />
@@ -1034,7 +1072,7 @@ const StepThree = () => {
                   {simpleMode ? "Transfer" : "Transfer Uang"}{" "}
                   {!simpleMode && (
                     <WordInBracket
-                      kalimat={`Uang Saya + Dana Darurat + Keinginan + Modal + Sedekah + Uang Ema Iki ${
+                      kalimat={`Uang Saya + Dana Darurat + Keinginan + Modal + Sedekah + Uang Ema Iki ${denaWork ? "+ Gaji Dena" : ""} ${
                         work ? " + Gaji Perhari" : ""
                       }`}
                     />
@@ -1049,7 +1087,8 @@ const StepThree = () => {
                         uangUntukSedekah +
                         splitBillEmaIki.adi +
                         splitBillEmaIki.uko +
-                        (work ? dailyWage : 0),
+                        (work ? dailyWage : 0) +
+                        (denaWork ? denaWageFullDay : 0),
                     )}
                   </b>
                 </li>
@@ -1121,6 +1160,13 @@ const StepThree = () => {
                           Sebesar <b>{formatNumber(dailyWage)}</b>
                         </li>
                       )}
+                      {denaWork && (
+                        <li>
+                          Catat Pemasukan Uang Dena
+                          <WordInBracket kalimat={"Gaji Dena"} />
+                          Sebesar <b>{formatNumber(denaWageFullDay)}</b>
+                        </li>
+                      )}
                       <li>
                         Edit Rekening Ema Iki Dengan Menambahkan Nominal Sebesar{" "}
                         <b>
@@ -1185,6 +1231,16 @@ const StepThree = () => {
                             </span>
                             <div className="bg-slate-900 flex-auto h-[2px] mx-1"></div>
                             <b>{formatNumber(dailyWage)}</b>
+                          </li>
+                        )}
+                        {denaWork && (
+                          <li>
+                            <span>
+                              Rekening Uang Dena
+                              <WordInBracket kalimat={"Gaji Dena"} />
+                            </span>
+                            <div className="bg-slate-900 flex-auto h-[2px] mx-1"></div>
+                            <b>{formatNumber(denaWageFullDay)}</b>
                           </li>
                         )}
                         <li>

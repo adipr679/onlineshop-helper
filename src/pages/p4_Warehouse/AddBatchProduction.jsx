@@ -319,6 +319,7 @@ export default function AddBatchProduction() {
                             <SelectGroup>
                               <SelectItem value="yard">Yard</SelectItem>
                               <SelectItem value="meter">Meter</SelectItem>
+                              <SelectItem value="pcs">Pcs</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>

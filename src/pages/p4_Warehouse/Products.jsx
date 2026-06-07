@@ -397,7 +397,7 @@ export default function Products() {
 
       {/* List Produk */}
       {products.length > 0 && (
-        <ul className="flex flex-wrap justify-center items-center gap-y-3">
+        <ul className="flex flex-wrap justify-center items-center gap-3">
           {products.map((prod) => {
             if (!prod.archived) {
               return (

@@ -21,6 +21,9 @@ export const metode = {
 export const fullDayWage = 50000;
 export const halfDayWage = 25000;
 
+// Gaji Harian Dena
+export const denaWageFullDay = 10000;
+
 // Additional function
 const now = new Date();
 export const day = now.getDay();
